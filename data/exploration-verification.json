@@ -1,0 +1,82 @@
+{
+  "tour": "six destinations; pause/resume/seek/completion pass",
+  "cameraPaths": [
+    "Spire",
+    "Colorado Convention Center",
+    "Performing Arts Complex",
+    "Sculpture Park",
+    "Larimer Square",
+    "16th Street corridor"
+  ],
+  "cameraSamples": 1086,
+  "walkingStarts": [
+    {
+      "place": "Spire",
+      "point": [
+        -103.92,
+        -60
+      ]
+    },
+    {
+      "place": "Larimer Square",
+      "point": [
+        -323,
+        300
+      ]
+    },
+    {
+      "place": "16th Street corridor",
+      "point": [
+        55,
+        275
+      ]
+    },
+    {
+      "place": "Performing Arts Complex",
+      "point": [
+        -121.1299423149112,
+        -63.87005768508881
+      ]
+    },
+    {
+      "place": "Sculpture Park",
+      "point": [
+        -310,
+        -175
+      ]
+    },
+    {
+      "place": "Colorado Convention Center",
+      "point": [
+        32.92820323027551,
+        -142
+      ]
+    }
+  ],
+  "routeSegments": [
+    {
+      "metres": 242,
+      "points": 15
+    },
+    {
+      "metres": 242,
+      "points": 15
+    },
+    {
+      "metres": 357,
+      "points": 22
+    },
+    {
+      "metres": 539,
+      "points": 35
+    },
+    {
+      "metres": 482,
+      "points": 27
+    }
+  ],
+  "totalRouteMetres": 1862,
+  "spireCrownMetres": 147.2,
+  "officialNeighborhoodAtSpire": "CBD",
+  "browserRendering": "Not tested: plain-static site has no supported Sites agent-preview server."
+}

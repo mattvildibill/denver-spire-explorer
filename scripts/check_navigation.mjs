@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import zlib from 'node:zlib';
+import {pointInBuilding,makeIndex,blocked,safePoint,localToLonLat} from '../src/navigation.mjs';
+const root=new URL('../',import.meta.url);const world=JSON.parse(fs.readFileSync(new URL('data/world.json',root)));const idx=makeIndex(world.buildings);
+const results={};
+const starts=[[-103.92,-60],[-323,300],[55,275],[-148,-37],[-310,-175]];
+results.walkingStarts=starts.map(([x,y])=>{const p=safePoint(x,y,idx,world.bounds);assert(p);assert(!blocked(...p,1.72,idx,.8));return {requested:[x,y],actual:p};});
+assert(blocked(0,0,1.72,idx));assert(!blocked(0,0,200,idx));results.SpireCollision='pass';
+const hole={rings:[[[0,0],[10,0],[10,10],[0,10]],[[3,3],[7,3],[7,7],[3,7]]],height:12};assert(pointInBuilding(1,1,hole));assert(!pointInBuilding(5,5,hole));results.courtyardHole='pass';
+const roof={rings:[[[0,0],[10,0],[10,10],[0,10]]],height:24,minHeight:19};const ri=makeIndex([roof]);assert(!blocked(5,5,1.72,ri));assert(blocked(5,5,20,ri));results.suspendedCanopy='pass';
+const samples=JSON.parse(fs.readFileSync(new URL('data/projection_checks.json',root)));let max=0;for(const s of samples){const a=localToLonLat(...s.xy,world.origin);const err=Math.hypot((a[0]-s.lonlat[0])*85000,(a[1]-s.lonlat[1])*111000);max=Math.max(max,err);assert(err<.01);}results.projectionMaxErrorMetres=max;
+const buf=zlib.gunzipSync(fs.readFileSync(new URL('data/city.bin.gz',root))),n=buf.readUInt32LE(0),h=JSON.parse(buf.subarray(4,4+n).toString());assert.equal(h.format,'DENV1');let vertices=0;for(const g of h.groups){assert(g.count>0);assert((g.offset%4)===0);assert(4+n+g.offset+g.count*h.stride*4<=buf.length);const a=new Float32Array(buf.buffer,buf.byteOffset+4+n+g.offset,g.count*h.stride);assert(a.every(Number.isFinite));vertices+=g.count;}results.geometry={batches:h.groups.length,vertices,finite:true};
+for(const [k,xy]of Object.entries(world.landmarks)){assert(xy[0]>=world.bounds[0]&&xy[0]<=world.bounds[2]);assert(xy[1]>=world.bounds[1]&&xy[1]<=world.bounds[3]);}results.landmarksInExtent=Object.keys(world.landmarks);
+const html=fs.readFileSync(new URL('exports/Denver_Explorer_Offline.html',root),'utf8');assert(!/__WORLD__|__GEOMETRY__|__BUNDLE__/.test(html));assert(!/<script[^>]+src=/.test(html));assert(html.includes('DecompressionStream'));assert(html.includes('Real Street View'));results.selfContained=true;
+fs.writeFileSync(new URL('data/verification.json',root),JSON.stringify(results,null,2));console.log(JSON.stringify(results,null,2));

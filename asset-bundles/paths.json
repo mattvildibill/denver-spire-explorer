@@ -1,0 +1,16 @@
+[
+  "data/routes_osm.json.gz",
+  "dist/assets/aerial.00.bin",
+  "dist/assets/aerial.01.bin",
+  "dist/assets/aerial.02.bin",
+  "dist/assets/aerial.03.bin",
+  "dist/assets/aerial.04.bin",
+  "dist/assets/city.00.bin",
+  "dist/assets/city.01.bin",
+  "dist/assets/city.02.bin",
+  "dist/assets/city.03.bin",
+  "dist/assets/city.04.bin",
+  "dist/assets/city.05.bin",
+  "dist/assets/city.06.bin",
+  "dist/assets/city.07.bin"
+]

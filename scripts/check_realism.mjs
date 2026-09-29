@@ -1,0 +1,7 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {HDRLoader} from '../vendor/HDRLoader.js';import * as THREE from '../vendor/three.module.js';import {finishMaterial} from '../src/realism.js';
+const p=JSON.parse(fs.readFileSync(new URL('../data/realism.json',import.meta.url)));assert.equal(Object.keys(p.images).length,9);const bytes=Buffer.from(p.hdr,'base64');const hdr=new HDRLoader().parse(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength));assert.equal(hdr.width,1024);assert.equal(hdr.height,512);assert.equal(hdr.data.length,1024*512*4);
+for(const name of ['USGS neutral asphalt with mapped aerial detail','USGS concrete with mapped aerial detail','Realism wall brick','SPIRE fine glazing and mullions']){
+ const g={name,aerial:name.startsWith('USGS')};const mat=finishMaterial(new THREE.MeshStandardMaterial(),g,Object.fromEntries(Object.keys(p.images).map(k=>[k,new THREE.Texture()])));const s={vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader,uniforms:{}};mat.onBeforeCompile(s);assert(s.vertexShader.includes('vVisibility=ambientVisibility'));assert(s.fragmentShader.includes('reflectedLight.indirectDiffuse*=mix'));
+ if(!name.includes('SPIRE')){assert(s.fragmentShader.indexOf('vec2 puv')<s.fragmentShader.indexOf('texture2D(photoRough,puv)'));assert(s.fragmentShader.includes('dFdx(puv)'));}
+}
+console.log('HDR decoded, nine textures present, material shader hooks and declaration ordering pass. GPU/browser rendering not tested.');

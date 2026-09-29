@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "files": 14,
+  "parts": [
+    {
+      "name": "assets-000.gzpart",
+      "sha256": "94451c46fce6535a700bd293fd7f80a610a5803177ae62f0225618da1e4fdf3c",
+      "size": 4194304
+    },
+    {
+      "name": "assets-001.gzpart",
+      "sha256": "b3337efc3a1fcee7ffddc1d4bc1beb4b2ee57a45ed469c62b87f13171d6d6b96",
+      "size": 4194304
+    },
+    {
+      "name": "assets-002.gzpart",
+      "sha256": "383a4a98c5e4cf344aeea49ee9370c76c9a15bfee2ec9037aaa16a46f0f9d164",
+      "size": 4194304
+    },
+    {
+      "name": "assets-003.gzpart",
+      "sha256": "7b7cc816c3195105014229a1f7f70b283ee01b6c183ff8578f81750e86e0b35a",
+      "size": 2478255
+    }
+  ]
+}
