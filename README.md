@@ -1,5 +1,7 @@
 # Denver Explorer
 
+[Live explorer](https://denver.mattvildibill.com) · [Matt Vildibill’s portfolio](https://mattvildibill.com)
+
 A free, self-contained 3D city explorer built from Blender geometry, Denver open building data, OpenStreetMap, and public-domain USDA NAIP aerial imagery.
 
 Open `exports/Denver_Explorer_Offline.html` in a current desktop browser after running the build script. The hosted entry is `dist/index.html`; it loads only local static asset chunks. The downloaded HTML requires no server, network, account, API key, trial or paid asset. The hosted website requires an internet connection. The hosted version contains the same standalone document. External Street View links open Google's own service and need internet; its content is not copied or embedded.
