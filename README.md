@@ -4,7 +4,7 @@
 
 A free, self-contained 3D city explorer built from Blender geometry, Denver open building data, OpenStreetMap, and public-domain USDA NAIP aerial imagery.
 
-Open `exports/Denver_Explorer_Offline.html` in a current desktop browser after running the build script. The hosted entry is `dist/index.html`; it loads only local static asset chunks. The downloaded HTML requires no server, network, account, API key, trial or paid asset. The hosted website requires an internet connection. The hosted version contains the same standalone document. External Street View links open Google's own service and need internet; its content is not copied or embedded.
+Open `exports/Denver_Explorer_Offline.html` in a current desktop browser after running the build script. The hosted entry is `dist/index.html`; it loads only local static asset chunks. The downloaded HTML requires no server, network, account, API key, trial or paid asset. The hosted website requires an internet connection. The hosted version loads a device-appropriate asset profile; the separate offline download contains the full original assets. External Street View links open Google's own service and need internet; its content is not copied or embedded.
 
 ## Controls
 
@@ -25,7 +25,7 @@ There are 530 source building groups and 1,916 source roof sections. The mapped 
 
 This is a GIS reconstruction with photographic ground detail, not a hyperreal photogrammetric twin or survey. Facades, balcony modules, some trees and lamps are procedural/inferred. Ground is flattened. Roof data is principally 2022; aerial data is September 25, 2023; OSM source extract reports July 15, 2026. New construction, current shopfronts, the completed Mall renovation, detailed sculptures, interiors and every street fixture are not reconstructed. Orthoimagery includes shadows, building lean and acquisition seams. Low roofs use projected aerial color; high roofs keep neutral finishes to avoid gross displacement.
 
-Walking checks roof footprints and respects holes and suspended structures; it is not a pedestrian accessibility or route-planning system. Flying allows movement through geometry. Older phones may need Light rendering quality.
+Walking checks roof footprints and respects holes and suspended structures; it is not a pedestrian accessibility or route-planning system. Flying allows movement through geometry. Phones and tablets start in Light quality automatically; Help provides Balanced and High options. [Performance profiles and verification](docs/PERFORMANCE.md) explain the tradeoffs.
 
 ## Sources and licensing
 

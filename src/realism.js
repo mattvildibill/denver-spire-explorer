@@ -1,8 +1,7 @@
 import * as THREE from '../vendor/three.module.js';
 import { HDRLoader } from '../vendor/HDRLoader.js';
 let textures={},environment;
-export async function loadRealism(renderer){
- const payload=JSON.parse(document.getElementById('realism-data').textContent);
+export async function loadRealism(renderer,payload){
  await Promise.all(Object.entries(payload.images).map(async([key,data])=>{const t=await new THREE.TextureLoader().loadAsync('data:image/jpeg;base64,'+data);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());if(key.endsWith('color'))t.colorSpace=THREE.SRGBColorSpace;textures[key]=t;}));
  const raw=Uint8Array.from(atob(payload.hdr),c=>c.charCodeAt(0));const parsed=new HDRLoader().parse(raw.buffer);const t=new THREE.DataTexture(parsed.data,parsed.width,parsed.height,THREE.RGBAFormat,parsed.type);t.flipY=true;t.minFilter=THREE.LinearFilter;t.magFilter=THREE.LinearFilter;t.mapping=THREE.EquirectangularReflectionMapping;t.colorSpace=THREE.LinearSRGBColorSpace;t.needsUpdate=true;
  const pmrem=new THREE.PMREMGenerator(renderer);environment=pmrem.fromEquirectangular(t).texture;pmrem.dispose();t.dispose();return environment;

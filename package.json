@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run assets:restore && python scripts/assemble.py",
-    "check": "node scripts/check_navigation.mjs && node scripts/check_realism.mjs && node scripts/check_exploration.mjs && node scripts/check_interactions.mjs && python scripts/check_shell.py && node scripts/check-ui.mjs",
+    "check": "node scripts/check_navigation.mjs && node scripts/check_realism.mjs && node scripts/check_exploration.mjs && node scripts/check_interactions.mjs && python scripts/check_shell.py && node scripts/check-ui.mjs && node scripts/check_performance.mjs && python scripts/test_optimize_assets.py && node scripts/check_render_loop.mjs",
     "assets:restore": "node scripts/restore-assets.mjs"
   },
   "keywords": [],

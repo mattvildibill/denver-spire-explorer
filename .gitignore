@@ -30,3 +30,10 @@ data/routes_osm.json
 /dist/assets/city.06.bin
 /dist/assets/city.07.bin
 .vercel/
+
+# Reproducible optimized outputs; the small aerial derivative is tracked.
+/data/city-indexed.bin.gz
+/data/city-light.bin.gz
+/dist/assets/optimized-*
+/dist/assets/viewer-*.js
+/dist/offline.html

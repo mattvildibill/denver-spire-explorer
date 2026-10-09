@@ -1,7 +1,7 @@
 """Build a standalone offline HTML viewer from the cached Blender export.
 No network is needed. Requires Python 3, and the pinned free esbuild binary in vendor.
 """
-import base64,json,re,subprocess,shutil
+import base64,json,re,subprocess,shutil,hashlib
 from pathlib import Path
 R=Path(__file__).resolve().parents[1]
 # Runtime assets are already embedded in the tracked standalone document.
@@ -11,6 +11,11 @@ prior=(R/'dist/index.html').read_text()
 for tag,filename in [('world-data','world.json'),('geometry-data','city.bin.gz'),('aerial-data','aerial.jpg'),('realism-data','realism.json')]:
  path=R/'data'/filename
  if not path.exists():
+  if filename in ['city.bin.gz','aerial.jpg','realism.json']:
+   prefix='city' if filename=='city.bin.gz' else 'aerial' if filename=='aerial.jpg' else 'realism'
+   files=sorted((R/'dist/assets').glob(prefix+'.[0-9][0-9].bin'))
+   if files:
+    path.write_bytes(b''.join(f.read_bytes() for f in files));continue
   value=re.search(r'<script id="'+tag+r'"[^>]*>(.*?)</script>',prior,re.S).group(1)
   if value.strip():path.write_bytes(value.encode() if filename.endswith('.json') else base64.b64decode(value.strip()))
   else:
@@ -25,6 +30,7 @@ if not (R/'vendor/esbuild').exists():
  assert hashlib.sha256(binary).hexdigest()=='b26b7502819ba76774dfd0b61f8c7d1ab8ee99482fca7b5970df746ce6042974'
  (R/'vendor/esbuild').write_bytes(binary);os.chmod(R/'vendor/esbuild',0o755)
 
+subprocess.run(['python',str(R/'scripts/optimize_assets.py')],check=True)
 subprocess.run([str(R/'vendor/esbuild'),str(R/'src/viewer.js'),'--bundle','--minify','--format=iife','--outfile='+str(R/'data/viewer.bundle.js')],check=True)
 s=(R/'src/shell.html').read_text()
 world=json.loads((R/'data/world.json').read_text())
@@ -39,15 +45,31 @@ s=s.replace('__BUNDLE__',(R/'data/viewer.bundle.js').read_text().replace('</scri
 assert not re.search(r'__(WORLD|GEOMETRY|AERIAL|REALISM|BUNDLE)__',s)
 (R/'exports').mkdir(exist_ok=True)
 (R/'exports/Denver_Explorer_Offline.html').write_text(s)
+(R/'dist/offline.html').write_text(s)
 # Serve large public assets as modest local chunks, without any external tile service.
 assets=R/'dist/assets';assets.mkdir(exist_ok=True)
-for old in assets.glob('*.bin'):old.unlink()
-for tag,name in [('geometry-data','city.bin.gz'),('aerial-data','aerial.jpg'),('realism-data','realism.json'),('layers-data','layers.json')]:
- data=(R/'src/layers-data.json').read_bytes() if name=='layers.json' else (R/'data'/name).read_bytes();files=[]
+# Keep original chunks intact: they are the lossless rebuild source.
+for old in assets.glob('optimized-*'):old.unlink()
+def chunks(data,prefix):
+ digest=hashlib.sha256(data).hexdigest()[:12];files=[]
  for i in range(0,len(data),1500000):
-  filename=name.split('.')[0]+'.'+str(i//1500000).zfill(2)+'.bin';(assets/filename).write_bytes(data[i:i+1500000]);files.append('assets/'+filename)
+  filename=f'optimized-{prefix}-{digest}.{i//1500000:02}.bin'
+  (assets/filename).write_bytes(data[i:i+1500000]);files.append('assets/'+filename)
+ return files
+for tag,name in [('geometry-data','city-indexed.bin.gz'),('aerial-data','aerial.jpg'),('realism-data','realism.json'),('layers-data','layers.json')]:
+ data=(R/'src/layers-data.json').read_bytes() if name=='layers.json' else (R/'data'/name).read_bytes()
+ files=chunks(data,name.split('.')[0]);light=''
+ if tag in ['geometry-data','aerial-data']:
+  lightname='city-light.bin.gz' if tag=='geometry-data' else 'aerial-light.jpg'
+  lightfiles=chunks((R/'data'/lightname).read_bytes(),lightname.split('.')[0])
+  light=" data-light-files='"+json.dumps(lightfiles,separators=(',',':'))+"'"
  pattern=r'<script id="'+tag+r'"[^>]*>.*?</script>'
- replacement=f"""<script id="{tag}" type="application/octet-stream" data-files='{json.dumps(files,separators=(',',':'))}'></script>"""
+ replacement=f"""<script id="{tag}" type="application/octet-stream" data-files='{json.dumps(files,separators=(',',':'))}'{light}></script>"""
  s=re.sub(pattern,lambda _:replacement,s,flags=re.S)
+# Cache application code independently of the map document.
+bundle=(R/'data/viewer.bundle.js').read_bytes();script='viewer-'+hashlib.sha256(bundle).hexdigest()[:12]+'.js'
+for old in assets.glob('viewer-*.js'):old.unlink()
+(assets/script).write_bytes(bundle)
+s=s.replace('<script>'+bundle.decode().replace('</script','<\\/script')+'</script>',f'<script src="assets/{script}" defer></script>')
 (R/'dist/index.html').write_text(s)
 print('Built hosted entry:',len(s.encode()),'bytes; standalone export:',(R/'exports/Denver_Explorer_Offline.html').stat().st_size,'bytes')
