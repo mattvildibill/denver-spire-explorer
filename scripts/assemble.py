@@ -32,7 +32,7 @@ if not (R/'vendor/esbuild').exists():
 
 subprocess.run(['python',str(R/'scripts/optimize_assets.py')],check=True)
 subprocess.run([str(R/'vendor/esbuild'),str(R/'src/viewer.js'),'--bundle','--minify','--format=iife','--outfile='+str(R/'data/viewer.bundle.js')],check=True)
-s=(R/'src/shell.html').read_text()
+s=(R/'src/shell.html').read_text().replace('__STYLES__',(R/'src/styles.css').read_text())
 world=json.loads((R/'data/world.json').read_text())
 s=s.replace('__LAYERS__',(R/'src/layers-data.json').read_text().replace('<','\\u003c'))
 s=s.replace('__WORLD__',json.dumps(world,separators=(',',':')).replace('<','\\u003c'))
@@ -70,6 +70,10 @@ for tag,name in [('geometry-data','city-indexed.bin.gz'),('aerial-data','aerial.
 bundle=(R/'data/viewer.bundle.js').read_bytes();script='viewer-'+hashlib.sha256(bundle).hexdigest()[:12]+'.js'
 for old in assets.glob('viewer-*.js'):old.unlink()
 (assets/script).write_bytes(bundle)
-s=s.replace('<script>'+bundle.decode().replace('</script','<\\/script')+'</script>',f'<script src="assets/{script}" defer></script>')
+map_bundle=subprocess.check_output([str(R/'vendor/esbuild'),str(R/'src/map-entry.mjs'),'--bundle','--minify','--format=iife'])
+map_script='viewer-map-'+hashlib.sha256(map_bundle).hexdigest()[:12]+'.js'
+(assets/map_script).write_bytes(map_bundle)
+loader=f"""<script>const entry=document.createElement('script');entry.src=new URLSearchParams(location.search).get('view')==='map'?'assets/{map_script}':'assets/{script}';document.body.appendChild(entry);</script>"""
+s=re.sub(r'<script id="viewer-code">.*?</script>',lambda _:loader,s,flags=re.S)
 (R/'dist/index.html').write_text(s)
 print('Built hosted entry:',len(s.encode()),'bytes; standalone export:',(R/'exports/Denver_Explorer_Offline.html').stat().st_size,'bytes')

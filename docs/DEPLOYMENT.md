@@ -4,13 +4,13 @@ Production domain: https://denver.mattvildibill.com
 Source: https://github.com/mattvildibill/denver-spire-explorer
 Production branch: `main`.
 
-`vercel.json` records the framework, build and output settings. This repository is connected to its own Vercel project; retain that Git connection. Vercel builds each push to `main`; other branches receive previews. No manual asset copy or Sites publishing is needed. The production branch is `main`. Migration was completed on September 29, 2026; Vercel reported successful deployments for all seven repositories.
+`vercel.json` records the framework, build and output settings. This repository is connected to its own Vercel project; retain that Git connection. Vercel builds each push to `main`; other branches receive previews. No manual asset copy or legacy-host publishing is needed. The production branch is `main`. Migration was completed on September 29, 2026; Vercel reported successful deployments for all seven repositories.
 
 Use Node.js 24. Run `npm ci` when a lockfile is present, then `npm run build`. No application secrets or database are required. Never commit `.env` files or Vercel credentials.
 
 The portfolio opens Denver directly in its own tab and offers a lightweight-map link. It does not load Denver in the background or inside an iframe. The legacy embed bridge and frame policy remain compatible with older links. Each project owns its runtime and assets. Original project attributions and model boundaries are retained.
 
-Existing ChatGPT-hosted versions have not been deleted or redirected. They remain active in Sites for existing shared links. New updates should be made in these GitHub repositories and deployed by Vercel; the legacy copies are retained for compatibility. If redirects are later installed on old hosts, preserve paths and query parameters.
+Existing legacy hosted versions have not been deleted or redirected. They remain available at their original hosts for existing shared links. New updates should be made in these GitHub repositories and deployed by Vercel; the legacy copies are retained for compatibility. If redirects are later installed on old hosts, preserve paths and query parameters.
 
 ## Assets
 

@@ -11,7 +11,7 @@ The previous explorer downloaded all city geometry, a 3268 × 4000 aerial image,
 - Geometry is indexed using exact full-attribute vertex records. Triangle order, positions, normals, UVs and ambient visibility are verified byte-for-byte for every retained triangle.
 - Light and Balanced use a committed 2048-pixel aerial derivative. Full-resolution imagery, photo materials, HDR lighting and district reflection capture are reserved for High.
 - Hosted assets stay binary, download through a three-request queue, retry once, and have bounded per-request timeouts. The offline edition is generated as a separate download; it is never reconstructed or retained in the active viewer.
-- WebGL and decompression support are checked before city-asset downloads. `?view=map` bypasses 3D entirely, retaining the footprint map and six destinations. Failed or lost graphics contexts also fall back to that map.
+- WebGL and decompression support are checked before city-asset downloads. `?view=map` selects a separate 2D entry module, retaining the footprint map and six selectable destinations without downloading Three.js or city asset chunks. Failed or lost graphics contexts also fall back to that map.
 - The GPU renders only when camera, UI or atmosphere changes, or a tour is active. Tree LOD and camera-following shadows update less often. Rendering quality can reduce automatically after sustained slow frames.
 - Touch controls are available on coarse-pointer tablets at desktop widths; low-height landscape layouts give more space to the scene. Photo quality remains an explicit choice in Help and reloads the page.
 
@@ -26,7 +26,7 @@ These are uncompressed HTTP asset-file sizes, not measured cellular transfer tim
 | Geometry vertices | 1,940,922 | 616,064 | 1,218,996 |
 | Geometry triangles | 646,974 | 360,474 | 646,974 |
 
-The full indexed geometry compresses slightly less efficiently (12,024,047 versus 11,292,660 bytes); its benefit is lower decoded/GPU vertex memory. The smaller imagery and omitted startup photo payload still reduce Balanced's initial asset total. The hosted HTML is below 850 KB, with the application bundle cached separately. Fingerprinted assets use immutable caching.
+The full indexed geometry compresses slightly less efficiently (12,024,047 versus 11,292,660 bytes); its benefit is lower decoded/GPU vertex memory. The smaller imagery and omitted startup photo payload still reduce Balanced's initial asset total. The hosted HTML is below 850 KB, with the application bundle cached separately. The 2D entry uses a roughly 4.3 KB runtime instead of the roughly 584 KB 3D bundle (uncompressed file sizes); the shared footprint/source HTML still loads. Neither figure is a cellular transfer-time claim. Fingerprinted assets use immutable caching.
 
 ## Build and checks
 
@@ -41,4 +41,4 @@ The build restores verified original assets, generates deterministic indexed pro
 
 Checks cover navigation/collision, all six tour stops, material shader construction, map fallback/focus, controls and layers, exact geometry reconstruction, malformed input, deterministic builds, quality selection, download concurrency/retry/error behavior, size budget and the actual render loop's idle/movement/visibility transitions.
 
-Cloud Chromium cannot create a WebGL context in this verification environment. Its map fallback can be checked, but that does not establish GPU rendering correctness, frame rate, or physical iPhone/iPad Safari behavior. Physical-device testing remains a verification limit; no universal frame-rate guarantee is made.
+The optional `scripts/check_browser.py` suite checks the map at five sizes and actual phone/desktop scene controls in Chromium, including a software-WebGL path. It verifies a compact phone landmark strip, reachable tour restart, named dialogs and reduced-motion overview. Software rendering does not establish hardware GPU fidelity, frame rate, or physical iPhone/iPad Safari behavior. Physical-device testing remains a verification limit; no universal frame-rate guarantee is made.

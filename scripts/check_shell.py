@@ -17,7 +17,10 @@ for source in Path('src').glob('*.js'):
 assert not p.scripts
 for id in ['tour-pause','tour-prev','tour-next','tour-exit','begin-tour','free-start','roof-view','layers-button','retry-3d']:assert p.ids[id][0]=='button'
 for k in ['layer-labels','layer-routes','layer-rings','layer-boundaries','layer-heights','layer-history']:assert p.ids[k][1]['type']=='checkbox'
-assert 'prefers-reduced-motion' in Path('src/shell.html').read_text()
+assert 'prefers-reduced-motion' in Path('src/styles.css').read_text()
+for name in ['help', 'share', 'layers']:
+ assert p.ids[name+'-dialog'][1]['aria-labelledby'] == name+'-title'
+ assert name+'-title' in p.ids
 hosted=Path('dist/index.html').read_text()
 for raw in re.findall(r"data-files='([^']+)'",hosted):
  for f in json.loads(raw):assert (Path('dist')/f).is_file(),f

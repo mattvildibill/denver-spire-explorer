@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 const source=fs.readFileSync('src/viewer.js','utf8');
-const loopSource=source.slice(source.indexOf('const previousPosition='),source.indexOf('// Test graphics'));
+const loopSource=source.slice(source.indexOf('const previousPosition ='),source.indexOf('// Test graphics'));
 const harness=Function('THREE',`
  let ready=true,last=0,transition=null,quality='balanced',frameNo=0,dirty=true,autoQuality=true,slowFrames=0,mode='fly',yaw=0,pitch=0;
  let walking=false,animated=false,renders=0,treeUpdates=0;

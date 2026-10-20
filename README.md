@@ -2,7 +2,7 @@
 
 [Live explorer](https://denver.mattvildibill.com) · [Matt Vildibill’s portfolio](https://mattvildibill.com)
 
-A free, self-contained 3D city explorer built from Blender geometry, Denver open building data, OpenStreetMap, and public-domain USDA NAIP aerial imagery.
+I built Denver Explorer to make a small stretch of downtown explorable from street level and above. It combines Blender geometry, Denver open building data, OpenStreetMap, and public-domain USDA NAIP aerial imagery. Start with the six-stop tour, or choose a landmark and explore freely.
 
 Open `exports/Denver_Explorer_Offline.html` in a current desktop browser after running the build script. The hosted entry is `dist/index.html`; it loads only local static asset chunks. The downloaded HTML requires no server, network, account, API key, trial or paid asset. The hosted website requires an internet connection. The hosted version loads a device-appropriate asset profile; the separate offline download contains the full original assets. External Street View links open Google's own service and need internet; its content is not copied or embedded.
 
@@ -46,7 +46,7 @@ python scripts/assemble.py
 node scripts/check_navigation.mjs
 ```
 
-The pinned Linux x64 esbuild executable is downloaded automatically from the public npm registry and hash-checked when rebuilding a fresh checkout; no npm install or account is required. Viewing remains fully offline. For another platform, use the same open-source esbuild release for that platform. `src/` contains all authored controls, styling, geometry loading and geography code. `data/verification.json` records geometry, landmark, collision, projection and self-containment checks. Browser interaction/performance testing was not available in this static-site build environment and is not claimed.
+The pinned Linux x64 esbuild executable is downloaded automatically from the public npm registry and hash-checked when rebuilding a fresh checkout; no npm install or account is required. Viewing remains fully offline. For another platform, use the same open-source esbuild release for that platform. `src/` contains all authored controls, styling, geometry loading and geography code. `data/verification.json` records geometry, landmark, collision, projection and self-containment checks. Optional real-browser checks cover phone layouts, landmark selection, tours, dialogs, reduced motion and the lightweight map. Software WebGL is supported for those checks; hardware frame rate and physical-device performance remain unmeasured.
 
 To regenerate the geometry, use `scripts/upgrade_export.py` in the companion Blender project. It reads the cached original scene, improves the materials/canopy, saves `Denver_Spire_Explorer.blend`, and exports material batches. Copy its `explorer/world.json` and `explorer/city.bin.gz` into this project's `data/`, then rebuild.
 
@@ -85,4 +85,16 @@ python scripts/check_shell.py
 
 The checks cover binary geometry integrity, projection, walking collisions, all six tour legs at 1,086 camera samples, tour timing/pause/seek/completion, route connectivity, the Spire/CBD boundary lookup, shader-hook construction, UI control handlers, daylight/seasons, building search, form associations and local/offline assets. Six new historical/source links returned HTTP 200 during this pass.
 
-**Testing limit:** interaction tests use a DOM adapter and real Three.js math/geometry, not an actual browser or GPU. This plain-static Sites project has no supported agent-preview server. Desktop/mobile visual layouts, real pointer/keyboard dispatch, GPU shader compilation, live performance, context-loss behavior and clipboard/file download execution could not be browser-tested here. They must not be described as a completed end-to-end browser pass.
+**Testing scope:** the historical interaction checks above use a DOM adapter and real Three.js math/geometry. The optional browser suite now also checks actual desktop/phone UI, software-WebGL startup, tour controls and named dialogs. It does not establish hardware performance, physical Safari behavior, pointer lock, every download/share path or full end-to-end device coverage.
+
+## Browser checks
+
+Serve `dist/` after building. With Python Playwright and Chromium installed, run:
+
+```sh
+python3 scripts/check_browser.py --base-url http://127.0.0.1:5175 --software-rendering
+```
+
+This optional suite checks the 2D entry at five viewport sizes, ensures it does not load the 3D runtime or city chunks, and exercises real scene controls at phone and desktop widths. It catches the landmark-strip layout regression using computed sizes and pointer targets. Omit `--software-rendering` when checking the browser's normal graphics path; these checks are not frame-rate benchmarks. `--maps-only` checks the overview without WebGL. Evidence goes to `/tmp/denver-browser-check` by default.
+
+`?view=map` opens the 2D overview directly. `?tour=1` starts the six-stop tour when the 3D scene is ready. Existing shared camera links retain priority over automatic tour startup. The offline HTML remains self-contained.
